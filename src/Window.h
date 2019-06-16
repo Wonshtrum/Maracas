@@ -1,3 +1,5 @@
+#ifndef MRC_WINDOW_H
+#define MRC_WINDOW_H
 #pragma once
 
 /* =========================================== *
@@ -10,7 +12,7 @@
  * window specific macros
  * =========================================== */
 #define GRAB_DATA windowData& data = *(windowData*)glfwGetWindowUserPointer(window)
-
+//ENDHEAD
 namespace Maracas {
 	using EventCallback = std::function<void(Event&)>;
 	//typedef void (*EventCallback)(Event&);
@@ -18,7 +20,7 @@ namespace Maracas {
 	 * data contained in a Maracas Window
 	 * =========================================== */
 	struct windowData {
-		char* title;
+		const char* title;
 		unsigned int width, height;
 		EventCallback callback;
 	};
@@ -26,29 +28,13 @@ namespace Maracas {
 	/* =========================================== *
 	 * GLFW and OPENGL initialisation
 	 * =========================================== */
-	static bool s_GLFWInitialized = false;
-	static void initGLFW() {
-		if (!s_GLFWInitialized) {
-			int success = glfwInit();
-			MRC_CORE_ASSERT(success, "Could not initialized GLFW");
-			glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-			glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-			glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-			MRC_CORE_INFO("GLFW initialized");
-		}
-	}
+	void initGLFW();
 	//////////////////////////////////////////////
 	//////////////////////////////////////////////
 	//           EXTREMELY TEMPORARY
 	//////////////////////////////////////////////
 	//////////////////////////////////////////////
-	static void initGLEW() {
-		int success = glewInit();
-		MRC_CORE_ASSERT(success == GLEW_OK, "Could not initialized GLEW");
-		MRC_CORE_INFO("GLEW initialized");
-		MRC_CORE_INFO(glGetString(GL_VERSION));
-		s_GLFWInitialized = true;
-	}
+	void initGLEW();
 
 	class GLFW_Window;
 	/* =========================================== *
@@ -56,7 +42,7 @@ namespace Maracas {
 	 * =========================================== */
 	class Window {
 		public:
-			static Window* createWindow(char* title, unsigned int width, unsigned int height);
+			static Window* createWindow(const char* title, unsigned int width, unsigned int height);
 			virtual ~Window() {}
 			virtual unsigned int getWidth() { return m_data.width; }
 			virtual unsigned int getHeight() { return m_data.height; }
@@ -65,7 +51,7 @@ namespace Maracas {
 		protected:
 			virtual void init() = 0;
 			virtual void shutdown() = 0;
-			virtual void create(char* title, unsigned int width, unsigned int height) { m_data = {title, width, height, nullptr}; init(); }
+			virtual void create(const char* title, unsigned int width, unsigned int height) { m_data = {title, width, height, nullptr}; init(); }
 			windowData m_data;
 	};
 
@@ -75,7 +61,7 @@ namespace Maracas {
 	 * =========================================== */
 	class GLFW_Window : public Window {
 		public:
-			GLFW_Window(char* title, unsigned int width, unsigned int height) { create(title, width, height); }
+			GLFW_Window(const char* title, unsigned int width, unsigned int height) { create(title, width, height); }
 			~GLFW_Window() { shutdown(); };
 			void onUpdate() override;
 		protected:
@@ -85,3 +71,5 @@ namespace Maracas {
 			GLFWwindow* m_window;
 	};
 }
+
+#endif

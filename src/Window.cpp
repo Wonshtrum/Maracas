@@ -1,6 +1,30 @@
 #include "Window.h"
 
 namespace Maracas {
+	bool s_GLFWInitialized = false;
+	void initGLFW() {
+		if (!s_GLFWInitialized) {
+			int success = glfwInit();
+			MRC_CORE_ASSERT(success, "Could not initialized GLFW");
+			glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
+			glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
+			glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+			MRC_CORE_INFO("GLFW initialized");
+		}
+	}
+	//////////////////////////////////////////////
+	//////////////////////////////////////////////
+	//           EXTREMELY TEMPORARY
+	//////////////////////////////////////////////
+	//////////////////////////////////////////////
+	void initGLEW() {
+		int success = glewInit();
+		MRC_CORE_ASSERT(success == GLEW_OK, "Could not initialized GLEW");
+		MRC_CORE_INFO("GLEW initialized");
+		MRC_CORE_INFO(glGetString(GL_VERSION));
+		s_GLFWInitialized = true;
+	}
+
 	void GLFW_Window::init() {
 		//Create window with GLFW
 		initGLFW();
@@ -77,5 +101,5 @@ namespace Maracas {
 		glfwPollEvents();
 	}
 
-	Window* Window::createWindow(char* title, unsigned int width, unsigned int height) { return new GLFW_Window(title, width, height); }
+	Window* Window::createWindow(const char* title, unsigned int width, unsigned int height) { return new GLFW_Window(title, width, height); }
 }

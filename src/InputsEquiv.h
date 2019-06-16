@@ -1,3 +1,8 @@
+#ifndef MRC_INPUTSEQUIV_H
+#define MRC_INPUTSEQUIV_H
+#pragma once
+//ENDHEAD
+
 #define MRC_KEY_0 	0
 #define MRC_KEY_1	1
 #define MRC_KEY_2	2
@@ -136,3 +141,5 @@
 
 #define GLFW_MOUSE_BUTTONS_TAB	{0,1,2,3,4,5,6,7}
 #define GLFW_EQUIV_MOUSE_BUTTONS_TAB	{0,1,2,3,4,5,6,7}
+
+#endif

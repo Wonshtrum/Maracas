@@ -1,3 +1,5 @@
+#ifndef MRC_LOG_H
+#define MRC_LOG_H
 #pragma once
 
 /* =========================================== *
@@ -6,7 +8,7 @@
 #define COLOR(x) "\033[38;5;" << Maracas::Logger::levelToColor(x) << "m"
 #define BOLD "\033[1m"
 #define END "\033[0m"
-
+//ENDHEAD
 namespace Maracas {
 	/* =========================================== *
 	 * color enumeration
@@ -39,14 +41,16 @@ namespace Maracas {
 	 * =========================================== */
 	class Logger {
 		public:
-			Logger(char* name):m_name(name), m_level(trace), m_bold(false) { log(trace, "MASTER", 42, "logger initialized"); }
+			Logger(const char* name):m_name(name), m_level(trace), m_bold(false) { log(trace, "MASTER", 42, "logger initialized"); }
 			~Logger() { log(trace, "MASTER", 42, "logger terminated"); };
-			void header(logLevel level, char* file, int line);
+			void header(logLevel level, const char* file, int line);
 			template<typename... T>
-			void log(logLevel level, char* file, int line, T... param) {
+			void log(logLevel level, const char* file, int line, T... param) {
 				if ( level >= m_level ) {
 					header(level, file, line);
-					const int a[] = {(std::cout << param,0)...};
+					int a[] = {(std::cout << param,0)...};
+					//soka...
+					if (a) {}
 					std::cout << END << std::endl;
                 		}
 			};
@@ -55,7 +59,7 @@ namespace Maracas {
 			static color levelToColor(logLevel level) { return s_colorCode[level]; }
 			static color s_colorCode[6];
 		private:
-			char* m_name;
+			const char* m_name;
 			logLevel m_level;
 			bool m_bold;
 	};
@@ -74,3 +78,5 @@ namespace Maracas {
 			static Logger* s_ClientLogger;
 	};
 }
+
+#endif

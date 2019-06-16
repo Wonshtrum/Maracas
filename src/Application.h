@@ -1,3 +1,5 @@
+#ifndef MRC_APPLICATION_H
+#define MRC_APPLICATION_H
 #pragma once
 
 /* =========================================== *
@@ -11,7 +13,7 @@
  * application specific macros
  * =========================================== */
 #define BIND(x) std::bind(&x,this,std::placeholders::_1)
-
+//ENDHEAD
 namespace Maracas {
 	/* =========================================== *
 	 * Application class (implemented by client)
@@ -32,3 +34,5 @@ namespace Maracas {
 	 * =========================================== */
 	Application* createApplication();
 }
+
+#endif

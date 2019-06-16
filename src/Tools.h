@@ -1,10 +1,7 @@
+#ifndef MRC_TOOLS_H
+#define MRC_TOOLS_H
 #pragma once
-
-/* =========================================== *
- * simple binary search in array
- * =========================================== */
-#include "Core.h"
-
+//ENDHEAD
 namespace Maracas {
 	/* =========================================== *
 	 * simple binary search in array
@@ -24,5 +21,9 @@ namespace Maracas {
 				return middle;
 			}
 		}
+		//todo... something nicer
+		return -1;
 	}
 }
+
+#endif

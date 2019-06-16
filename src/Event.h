@@ -1,3 +1,5 @@
+#ifndef MRC_EVENT_H
+#define MRC_EVENT_H
 #pragma once
 
 /* =========================================== *
@@ -12,21 +14,21 @@
 #define EVENT_CLASS_CATEGORY(category) virtual inline int getCategoryFlags() override { return category; }
 #define EVENT_CLASS_TYPE(type) inline static eventType getStaticType() { return type; }\
 	virtual eventType getEventType() override { return type; }\
-	virtual char* getName() override { return #type; }
-
+	virtual const char* getName() override { return #type; }
+//ENDHEAD
 namespace Maracas {
 	/* =========================================== *
 	 * memory structure for input polling
 	 * =========================================== */
 	struct InputsStates {
-		inline static constexpr int GLFWkeys[KEY_COUNT] = GLFW_KEYS_TAB;
-		inline static constexpr int GLFWequivKey[KEY_COUNT] = GLFW_EQUIV_KEYS_TAB;
-		inline static constexpr int GLFWmouseButtons[MOUSE_BUTTON_COUNT] = GLFW_MOUSE_BUTTONS_TAB;
-		inline static constexpr int GLFWequivMouseButtons[MOUSE_BUTTON_COUNT] = GLFW_EQUIV_MOUSE_BUTTONS_TAB;
-		inline static bool keys[KEY_COUNT] = { false };
-		inline static bool mouseButtons[MOUSE_BUTTON_COUNT] = { false };
-		inline static int cursorX = 0;
-		inline static int cursorY = 0;
+		static int GLFWkeys[KEY_COUNT];
+		static int GLFWequivKey[KEY_COUNT];
+		static int GLFWmouseButtons[MOUSE_BUTTON_COUNT];
+		static int GLFWequivMouseButtons[MOUSE_BUTTON_COUNT];
+		static bool keys[KEY_COUNT];
+		static bool mouseButtons[MOUSE_BUTTON_COUNT];
+		static int cursorX;
+		static int cursorY;
 		inline static void setKey(int key, bool value) { keys[key] = value; }
 		inline static void setMouseButton(int button, bool value) { mouseButtons[button] = value; }
 		inline static void setCursorPos(int x, int y) { cursorX = x; cursorY = y; }
@@ -50,12 +52,8 @@ namespace Maracas {
 					break;
 			}
 		}*/
-		inline static int getGLFWequivKey(int key) {
-			return GLFWequivKey[binarySearch(GLFWkeys, KEY_COUNT, key)];
-		}
-		inline static int getGLFWequivMouseButton(int button) {
-			return GLFWequivMouseButtons[binarySearch(GLFWmouseButtons, MOUSE_BUTTON_COUNT, button)];
-		}
+		inline static int getGLFWequivKey(int key) { return GLFWequivKey[binarySearch(GLFWkeys, KEY_COUNT, key)]; }
+		inline static int getGLFWequivMouseButton(int button) { return GLFWequivMouseButtons[binarySearch(GLFWmouseButtons, MOUSE_BUTTON_COUNT, button)]; }
 	};
 
 	/* =========================================== *
@@ -86,8 +84,8 @@ namespace Maracas {
 		public:
 			inline static eventType getStaticType() { return None; }
 			virtual eventType getEventType() = 0;
-			virtual char* getName() = 0;
-			virtual inline int getCategoryFlags() = 0;
+			virtual const char* getName() = 0;
+			virtual int getCategoryFlags() = 0;
 			virtual std::string toString() { return getName(); }
 			virtual inline bool isInCategory(eventCategory category) { return getCategoryFlags() & category; }
 			bool m_handled = false;
@@ -157,6 +155,11 @@ namespace Maracas {
 		public:
 			inline int getButton() { return m_button; }
 			EVENT_CLASS_CATEGORY(EventCategoryMouseButton | EventCategoryInput)
+			std::string toString() override {
+				std::stringstream ss;
+				ss << getName() << ": " << m_button;
+				return ss.str();
+			}
 		protected:
 			MouseButtonEvent(int button): m_button(button) {}
 			int m_button;
@@ -168,11 +171,6 @@ namespace Maracas {
 	class MouseButtonPressedEvent: public MouseButtonEvent {
 		public:
 			MouseButtonPressedEvent(int button): MouseButtonEvent(button) { InputsStates::setMouseButton(button, true); }
-			std::string toString() override {
-				std::stringstream ss;
-				ss << getName() << ": " << m_button;
-				return ss.str();
-			}
 			EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
@@ -182,11 +180,6 @@ namespace Maracas {
 	class MouseButtonReleasedEvent: public MouseButtonEvent {
 		public:
 			MouseButtonReleasedEvent(int button): MouseButtonEvent(button) { InputsStates::setMouseButton(button, false); }
-			std::string toString() override {
-				std::stringstream ss;
-				ss << getName() << ": " << m_button;
-				return ss.str();
-			}
 			EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 
@@ -242,3 +235,5 @@ namespace Maracas {
 		return false;
 	}
 }
+
+#endif

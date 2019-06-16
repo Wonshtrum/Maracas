@@ -1,9 +1,21 @@
+#ifndef MRC_CORE_H
+#define MRC_CORE_H
 #pragma once
 
 /* =========================================== *
  * load config
  * =========================================== */
 #include "config.h"
+
+/* =========================================== *
+ * load external libraries
+ * =========================================== */
+#include <iostream>
+#include <sstream>
+#include <functional>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+//ENDHEAD
 
 /* =========================================== *
  * debug-dependant macros
@@ -53,19 +65,11 @@
  * =========================================== */
 #define BIT(x) (1 << x)
 
-/* =========================================== *
- * load external libraries
- * =========================================== */
-#include <string>
-#include <sstream>
-#include <functional>
-#include <iostream>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 
 /* =========================================== *
  * load internal libraries
  * =========================================== */
 #include "Log.h"
 #include "Tools.h"
+
+#endif
