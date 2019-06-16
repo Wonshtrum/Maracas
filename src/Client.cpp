@@ -14,6 +14,13 @@ class MyApp : public Maracas::Application {
 				glClearColor(0.05,0.2,0.3,1);
 				glClear(GL_COLOR_BUFFER_BIT);
 				m_window->onUpdate();
+				if (Maracas::InputsStates::getKey(MRC_KEY_RIGHT) && Maracas::InputsStates::getKey(MRC_KEY_LEFT)) {
+					MRC_DEBUG("<---->");
+				} else if (Maracas::InputsStates::getKey(MRC_KEY_RIGHT)) {
+					MRC_DEBUG("   -->");
+				} else if (Maracas::InputsStates::getKey(MRC_KEY_LEFT)) {
+					MRC_DEBUG("<--   ");
+				}
 			}
 			delete m_window;
 			MRC_INFO("Application stoped");

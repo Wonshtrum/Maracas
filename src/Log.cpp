@@ -14,6 +14,6 @@ namespace Maracas {
 		//s_CoreLogger->setLevel(debug);
 		s_CoreLogger->setBold(true);
 		s_ClientLogger = new Logger((char*)"APP");
-		//s_ClientLogger->setLevel(critical);
+		s_ClientLogger->setLevel(debug);
 	}
 }

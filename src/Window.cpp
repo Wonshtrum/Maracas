@@ -20,19 +20,20 @@ namespace Maracas {
 		});
 		glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scanCode, int action, int mods) {
 			GRAB_DATA;
+			int mrc_key = InputsStates::getGLFWequivKey(key);
 			switch (action) {
 				case GLFW_PRESS: {
-					KeyPressedEvent event(key, 0);
+					KeyPressedEvent event(mrc_key, 0);
 					data.callback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
-					KeyReleasedEvent event(key);
+					KeyReleasedEvent event(mrc_key);
 					data.callback(event);
 					break;
 				}
 				case GLFW_REPEAT: {
-					KeyPressedEvent event(key, 1);
+					KeyPressedEvent event(mrc_key, 1);
 					data.callback(event);
 					break;
 				}
@@ -40,14 +41,15 @@ namespace Maracas {
 		});
 		glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
 			GRAB_DATA;
+			int mrc_button = InputsStates::getGLFWequivMouseButton(button);
 			switch (action) {
 				case GLFW_PRESS: {
-					MouseButtonPressedEvent event(button);
+					MouseButtonPressedEvent event(mrc_button);
 					data.callback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
-					MouseButtonReleasedEvent event(button);
+					MouseButtonReleasedEvent event(mrc_button);
 					data.callback(event);
 					break;
 				}

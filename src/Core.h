@@ -68,3 +68,4 @@
  * load internal libraries
  * =========================================== */
 #include "Log.h"
+#include "Tools.h"

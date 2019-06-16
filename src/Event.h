@@ -4,6 +4,7 @@
  * load headers
  * =========================================== */
 #include "Core.h"
+#include "InputsEquiv.h"
 
 /* =========================================== *
  * event specific macros
@@ -15,13 +16,56 @@
 
 namespace Maracas {
 	/* =========================================== *
+	 * memory structure for input polling
+	 * =========================================== */
+	struct InputsStates {
+		inline static constexpr int GLFWkeys[KEY_COUNT] = GLFW_KEYS_TAB;
+		inline static constexpr int GLFWequivKey[KEY_COUNT] = GLFW_EQUIV_KEYS_TAB;
+		inline static constexpr int GLFWmouseButtons[MOUSE_BUTTON_COUNT] = GLFW_MOUSE_BUTTONS_TAB;
+		inline static constexpr int GLFWequivMouseButtons[MOUSE_BUTTON_COUNT] = GLFW_EQUIV_MOUSE_BUTTONS_TAB;
+		inline static bool keys[KEY_COUNT] = { false };
+		inline static bool mouseButtons[MOUSE_BUTTON_COUNT] = { false };
+		inline static int cursorX = 0;
+		inline static int cursorY = 0;
+		inline static void setKey(int key, bool value) { keys[key] = value; }
+		inline static void setMouseButton(int button, bool value) { mouseButtons[button] = value; }
+		inline static void setCursorPos(int x, int y) { cursorX = x; cursorY = y; }
+		inline static bool getKey(int key) { return keys[key]; }
+		inline static bool getMouseButton(int button) { return mouseButtons[button]; }
+		inline static int getCursorX() { return cursorX; }
+		inline static int getCursorY() { return cursorY; }
+		/*static void updateInputSatus(Event& event) {
+			switch (event.getEventType()) {
+				case MouseButtonPressed:
+					mouseButtons[(*(MouseButtonPressedEvent*)&event).getButton()] = true;
+					break;
+				case MouseButtonReleased:
+					mouseButtons[(*(MouseButtonReleasedEvent*)&event).getButton()] = false;
+					break;
+				case KeyPressed:
+					keys[(*(KeyPressedEvent*)&event).getKeyCode()] = true;
+					break;
+				case KeyReleased:
+					keys[(*(KeyReleasedEvent*)&event).getKeyCode()] = false;
+					break;
+			}
+		}*/
+		inline static int getGLFWequivKey(int key) {
+			return GLFWequivKey[binarySearch(GLFWkeys, KEY_COUNT, key)];
+		}
+		inline static int getGLFWequivMouseButton(int button) {
+			return GLFWequivMouseButtons[binarySearch(GLFWmouseButtons, MOUSE_BUTTON_COUNT, button)];
+		}
+	};
+
+	/* =========================================== *
 	 * event type enumeration
 	 * =========================================== */
 	enum eventType {
 		None = 0,
 		WindowClosed, WindowResized, WindowFocus, WindowLostFocus, WindowMoved,	//todo
 		KeyPressed, KeyReleased,						//done
-		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled	//todo
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled	//done
 	};
 
 	/* =========================================== *
@@ -39,7 +83,6 @@ namespace Maracas {
 	 * class Event, usable by Maracas event system
 	 * =========================================== */
 	class Event {
-		friend class EventDispatcher;
 		public:
 			inline static eventType getStaticType() { return None; }
 			virtual eventType getEventType() = 0;
@@ -47,8 +90,6 @@ namespace Maracas {
 			virtual inline int getCategoryFlags() = 0;
 			virtual std::string toString() { return getName(); }
 			virtual inline bool isInCategory(eventCategory category) { return getCategoryFlags() & category; }
-			virtual inline void setHandled(bool handled) { m_handled = handled; }
-		protected:
 			bool m_handled = false;
 	};
 
@@ -83,7 +124,7 @@ namespace Maracas {
 	 * =========================================== */
 	class KeyPressedEvent: public KeyEvent {
 		public:
-			KeyPressedEvent(int keyCode, int repeatCount): KeyEvent(keyCode), m_repeatCount(repeatCount) {}
+			KeyPressedEvent(int keyCode, int repeatCount): KeyEvent(keyCode), m_repeatCount(repeatCount) { InputsStates::setKey(keyCode, true); }
 			inline int getRepeatCount() { return m_repeatCount; }
 			std::string toString() override {
 				std::stringstream ss;
@@ -100,7 +141,7 @@ namespace Maracas {
 	 * =========================================== */
 	class KeyReleasedEvent: public KeyEvent {
 		public:
-			KeyReleasedEvent(int keyCode): KeyEvent(keyCode) {}
+			KeyReleasedEvent(int keyCode): KeyEvent(keyCode) { InputsStates::setKey(keyCode, false); }
 			std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": " << m_keyCode;
@@ -126,7 +167,7 @@ namespace Maracas {
 	 * =========================================== */
 	class MouseButtonPressedEvent: public MouseButtonEvent {
 		public:
-			MouseButtonPressedEvent(int button): MouseButtonEvent(button) {}
+			MouseButtonPressedEvent(int button): MouseButtonEvent(button) { InputsStates::setMouseButton(button, true); }
 			std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": " << m_button;
@@ -140,7 +181,7 @@ namespace Maracas {
 	 * =========================================== */
 	class MouseButtonReleasedEvent: public MouseButtonEvent {
 		public:
-			MouseButtonReleasedEvent(int button): MouseButtonEvent(button) {}
+			MouseButtonReleasedEvent(int button): MouseButtonEvent(button) { InputsStates::setMouseButton(button, false); }
 			std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": " << m_button;
@@ -154,7 +195,7 @@ namespace Maracas {
 	 * =========================================== */
 	class MouseMovedEvent: public Event {
 		public:
-			MouseMovedEvent(int x, int y): m_x(x), m_y(y) {}
+			MouseMovedEvent(int x, int y): m_x(x), m_y(y) { InputsStates::setCursorPos(x, y); }
 			inline int getX() { return m_x; }
 			inline int getY() { return m_y; }
 			std::string toString() override {
@@ -195,7 +236,7 @@ namespace Maracas {
 	template<typename T>
 	bool dispatch(Event& event, std::function<bool(T&)> func) {
 		if (event.getEventType() == T::getStaticType()) {
-			event.setHandled(func(*(T*)&event));
+			event.m_handled = func(*(T*)&event);
 			return true;
 		}
 		return false;

@@ -12,7 +12,7 @@ namespace Maracas {
 		return true;
 	}
 	void Application::onEvent(Event& event) {
-		MRC_CORE_TRACE(event.toString());
+		MRC_TRACE(event.toString());
 		dispatch<WindowClosedEvent>(event,BIND(Application::onWindowClosed));
 	}
 }
