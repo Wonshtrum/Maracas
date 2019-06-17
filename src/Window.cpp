@@ -1,39 +1,24 @@
 #include "Window.h"
 
 namespace Maracas {
-	bool s_GLFWInitialized = false;
-	void initGLFW() {
+	bool GLFW_Window::s_GLFWInitialized = false;
+	void GLFW_Window::initGLFW() {
 		if (!s_GLFWInitialized) {
 			int success = glfwInit();
 			MRC_CORE_ASSERT(success, "Could not initialized GLFW");
-			glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-			glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-			glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 			MRC_CORE_INFO("GLFW initialized");
+			s_GLFWInitialized = true;
 		}
-	}
-	//////////////////////////////////////////////
-	//////////////////////////////////////////////
-	//           EXTREMELY TEMPORARY
-	//////////////////////////////////////////////
-	//////////////////////////////////////////////
-	void initGLEW() {
-		int success = glewInit();
-		MRC_CORE_ASSERT(success == GLEW_OK, "Could not initialized GLEW");
-		MRC_CORE_INFO("GLEW initialized");
-		MRC_CORE_INFO(glGetString(GL_VERSION));
-		s_GLFWInitialized = true;
 	}
 
 	void GLFW_Window::init() {
 		//Create window with GLFW
 		initGLFW();
 		m_window = glfwCreateWindow(m_data.width, m_data.height, m_data.title, nullptr, nullptr);
-		glfwMakeContextCurrent(m_window);
 		//Create OpenGL environment
-		initGLEW();
-		glfwMakeContextCurrent(m_window);
-		MRC_CORE_WARN("window created");
+		m_context = new OpenGLContext(m_window);
+		m_context->init();
+		MRC_CORE_WARN("GLFW window created: \"", m_data.title, "\" (", m_data.width, "x", m_data.height, ")");
 
 		//Set callbacks
 		glfwSetWindowUserPointer(m_window, &m_data);
@@ -97,9 +82,19 @@ namespace Maracas {
 	}
 
 	void GLFW_Window::onUpdate() {
-		glfwSwapBuffers(m_window);
+		glClearColor(0.05,0.2,0.3,1);
+		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
+		m_context->swapBuffers();
 	}
-
+	
+	void DEBUG_Window::init() { MRC_CORE_WARN("dummy window created: \"", m_data.title, "\" (", m_data.width, "x", m_data.height, ")"); }
+	void DEBUG_Window::shutdown() { MRC_CORE_WARN("dummy window destroyed"); }
+	void DEBUG_Window::onUpdate() { WindowClosedEvent event; m_data.callback(event); }
+	
+#if defined(USE_GLFW_WINDOW)
 	Window* Window::createWindow(const char* title, unsigned int width, unsigned int height) { return new GLFW_Window(title, width, height); }
+#else
+	Window* Window::createWindow(const char* title, unsigned int width, unsigned int height) { return new DEBUG_Window(title, width, height); }
+#endif
 }

@@ -11,8 +11,6 @@ class MyApp : public Maracas::Application {
 			m_window = Maracas::Window::createWindow("Client Application",600,400);
 			m_window->setEventCallback(BIND(MyApp::onEvent));
 			while (m_running) {
-				glClearColor(0.05,0.2,0.3,1);
-				glClear(GL_COLOR_BUFFER_BIT);
 				m_window->onUpdate();
 				if (Maracas::InputsStates::getKey(MRC_KEY_RIGHT) && Maracas::InputsStates::getKey(MRC_KEY_LEFT)) {
 					MRC_DEBUG("<---->");

@@ -36,22 +36,6 @@ namespace Maracas {
 		inline static bool getMouseButton(int button) { return mouseButtons[button]; }
 		inline static int getCursorX() { return cursorX; }
 		inline static int getCursorY() { return cursorY; }
-		/*static void updateInputSatus(Event& event) {
-			switch (event.getEventType()) {
-				case MouseButtonPressed:
-					mouseButtons[(*(MouseButtonPressedEvent*)&event).getButton()] = true;
-					break;
-				case MouseButtonReleased:
-					mouseButtons[(*(MouseButtonReleasedEvent*)&event).getButton()] = false;
-					break;
-				case KeyPressed:
-					keys[(*(KeyPressedEvent*)&event).getKeyCode()] = true;
-					break;
-				case KeyReleased:
-					keys[(*(KeyReleasedEvent*)&event).getKeyCode()] = false;
-					break;
-			}
-		}*/
 		inline static int getGLFWequivKey(int key) { return GLFWequivKey[binarySearch(GLFWkeys, KEY_COUNT, key)]; }
 		inline static int getGLFWequivMouseButton(int button) { return GLFWequivMouseButtons[binarySearch(GLFWmouseButtons, MOUSE_BUTTON_COUNT, button)]; }
 	};
@@ -124,7 +108,7 @@ namespace Maracas {
 		public:
 			KeyPressedEvent(int keyCode, int repeatCount): KeyEvent(keyCode), m_repeatCount(repeatCount) { InputsStates::setKey(keyCode, true); }
 			inline int getRepeatCount() { return m_repeatCount; }
-			std::string toString() override {
+			virtual std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": " << m_keyCode << " (x" << m_repeatCount << ")";
 				return ss.str();
@@ -140,7 +124,7 @@ namespace Maracas {
 	class KeyReleasedEvent: public KeyEvent {
 		public:
 			KeyReleasedEvent(int keyCode): KeyEvent(keyCode) { InputsStates::setKey(keyCode, false); }
-			std::string toString() override {
+			virtual std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": " << m_keyCode;
 				return ss.str();
@@ -155,7 +139,7 @@ namespace Maracas {
 		public:
 			inline int getButton() { return m_button; }
 			EVENT_CLASS_CATEGORY(EventCategoryMouseButton | EventCategoryInput)
-			std::string toString() override {
+			virtual std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": " << m_button;
 				return ss.str();
@@ -191,7 +175,7 @@ namespace Maracas {
 			MouseMovedEvent(int x, int y): m_x(x), m_y(y) { InputsStates::setCursorPos(x, y); }
 			inline int getX() { return m_x; }
 			inline int getY() { return m_y; }
-			std::string toString() override {
+			virtual std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": ( " << m_x << " ; " << m_y << " )";
 				return ss.str();
@@ -211,7 +195,7 @@ namespace Maracas {
 			MouseScrolledEvent(float dx, float dy): m_dx(dx), m_dy(dy) {}
 			inline float getDx() { return m_dx; }
 			inline float getDy() { return m_dy; }
-			std::string toString() override {
+			virtual std::string toString() override {
 				std::stringstream ss;
 				ss << getName() << ": ( " << m_dx << " ; " << m_dy << " )";
 				return ss.str();

@@ -7,6 +7,7 @@
  * =========================================== */
 #include "Core.h"
 #include "Event.h"
+#include "GraphicsContext.h"
 
 /* =========================================== *
  * window specific macros
@@ -15,7 +16,6 @@
 //ENDHEAD
 namespace Maracas {
 	using EventCallback = std::function<void(Event&)>;
-	//typedef void (*EventCallback)(Event&);
 	/* =========================================== *
 	 * data contained in a Maracas Window
 	 * =========================================== */
@@ -25,18 +25,6 @@ namespace Maracas {
 		EventCallback callback;
 	};
 
-	/* =========================================== *
-	 * GLFW and OPENGL initialisation
-	 * =========================================== */
-	void initGLFW();
-	//////////////////////////////////////////////
-	//////////////////////////////////////////////
-	//           EXTREMELY TEMPORARY
-	//////////////////////////////////////////////
-	//////////////////////////////////////////////
-	void initGLEW();
-
-	class GLFW_Window;
 	/* =========================================== *
 	 * abstracted class Window, Maracas API
 	 * =========================================== */
@@ -61,14 +49,30 @@ namespace Maracas {
 	 * =========================================== */
 	class GLFW_Window : public Window {
 		public:
+			static void initGLFW();
 			GLFW_Window(const char* title, unsigned int width, unsigned int height) { create(title, width, height); }
 			~GLFW_Window() { shutdown(); };
-			void onUpdate() override;
+			virtual void onUpdate() override;
 		protected:
-			void init() override;
-			void shutdown() override;
+			virtual void init() override;
+			virtual void shutdown() override;
 		private:
 			GLFWwindow* m_window;
+			GraphicsContext* m_context;
+			static bool s_GLFWInitialized;
+	};
+
+	/* =========================================== *
+	 * implemented dummy class Window (debug)
+	 * =========================================== */
+	class DEBUG_Window : public Window {
+		public:
+			DEBUG_Window(const char* title, unsigned int width, unsigned int height) { create(title, width, height); }
+			~DEBUG_Window() { shutdown(); };
+			virtual void onUpdate() override;
+		protected:
+			virtual void init() override;
+			virtual void shutdown() override;
 	};
 }
 

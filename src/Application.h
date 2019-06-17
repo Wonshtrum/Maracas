@@ -22,7 +22,7 @@ namespace Maracas {
 		public:
 			Application();
 			virtual ~Application();
-			void onEvent(Event& event);
+			virtual void onEvent(Event& event);
 			bool onWindowClosed(WindowClosedEvent& event);
 			virtual void run() = 0;
 		protected:
