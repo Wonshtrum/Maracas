@@ -6,7 +6,7 @@
  * constants
  * =========================================== */
 #define DEBUG_MOD
-#define USE_DEBUG_WINDOW
+#define USE_GLFW_WINDOW
 //ENDHEAD
 
 #endif

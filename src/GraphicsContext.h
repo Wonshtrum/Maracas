@@ -6,6 +6,7 @@
  * load headers
  * =========================================== */
 #include "Core.h"
+#include "Shader.h"
 //ENDHEAD
 namespace Maracas {
 	/* =========================================== *
@@ -22,12 +23,16 @@ namespace Maracas {
 	 * =========================================== */
 	class OpenGLContext: public GraphicsContext {
 		public:
-			OpenGLContext(GLFWwindow* windowHandle): m_windowHandle(windowHandle) { glfwMakeContextCurrent(windowHandle); };
-			~OpenGLContext() { MRC_INFO("OpenGL context destroyed"); }
+			OpenGLContext(GLFWwindow* windowHandle);
+			~OpenGLContext();
 			virtual void init() override;
 			virtual void swapBuffers() override;
 		private:
 			GLFWwindow* m_windowHandle;
+			unsigned int m_vao;
+			unsigned int m_vbo;
+			unsigned int m_ibo;
+			Shader* m_shader;
 	};
 }
 

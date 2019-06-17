@@ -24,9 +24,12 @@ namespace Maracas {
 			virtual ~Application();
 			virtual void onEvent(Event& event);
 			bool onWindowClosed(WindowClosedEvent& event);
-			virtual void run() = 0;
+			virtual void run();
+			virtual void onUpdate() = 0;
+			inline static Application* get();
 		protected:
-			bool m_running;
+			bool m_running = true;
+			static Application* s_instance;
 	};
 
 	/* =========================================== *
