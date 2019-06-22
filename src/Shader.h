@@ -17,6 +17,7 @@ namespace Maracas {
 			~Shader();
 			void bind();
 			void unbind();
+			unsigned int getProgram() { return m_program; }
 			static unsigned int compileShader(unsigned int type, const char* source);
 		private:
 			unsigned int m_program;

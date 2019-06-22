@@ -35,12 +35,13 @@ namespace Maracas {
 			virtual unsigned int getWidth() { return m_data.width; }
 			virtual unsigned int getHeight() { return m_data.height; }
 			virtual void setEventCallback(EventCallback callback) { m_data.callback = callback; }
-			virtual void onUpdate() = 0;
+			virtual void pollEvents() = 0;
+			GraphicsContext* getContext() { return m_context; }
 		protected:
 			virtual void init() = 0;
-			virtual void shutdown() = 0;
 			virtual void create(const char* title, unsigned int width, unsigned int height) { m_data = {title, width, height, nullptr}; init(); }
 			windowData m_data;
+			GraphicsContext* m_context;
 	};
 
 
@@ -51,14 +52,12 @@ namespace Maracas {
 		public:
 			static void initGLFW();
 			GLFW_Window(const char* title, unsigned int width, unsigned int height) { create(title, width, height); }
-			~GLFW_Window() { shutdown(); };
-			virtual void onUpdate() override;
+			virtual ~GLFW_Window() override;
+			virtual void pollEvents() override;
 		protected:
 			virtual void init() override;
-			virtual void shutdown() override;
 		private:
 			GLFWwindow* m_window;
-			GraphicsContext* m_context;
 			static bool s_GLFWInitialized;
 	};
 
@@ -68,11 +67,10 @@ namespace Maracas {
 	class DEBUG_Window : public Window {
 		public:
 			DEBUG_Window(const char* title, unsigned int width, unsigned int height) { create(title, width, height); }
-			~DEBUG_Window() { shutdown(); };
-			virtual void onUpdate() override;
+			virtual ~DEBUG_Window() override;
+			virtual void pollEvents() override;
 		protected:
 			virtual void init() override;
-			virtual void shutdown() override;
 	};
 }
 

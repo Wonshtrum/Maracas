@@ -1,6 +1,4 @@
-#include "Application.h"
-
-//extern Maracas::Application* Maracas::CreateApplication();
+#include "EntryPoint.h"
 
 int main(int argc, char** argv) {
 	Maracas::Log::init();

@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "GraphicsData.h"
 
 namespace Maracas {
 	Application* Application::s_instance;
@@ -6,6 +7,11 @@ namespace Maracas {
 		MRC_CORE_ASSERT(!s_instance,"Application already exists!");
 		s_instance = this;
 		MRC_CORE_INFO("Application started");
+
+		/*BufferElement test[] = {{ShaderData::Float2,"a_position"}};
+		BufferLayout b(test, 1);
+		VertexArray vao = OpenGL_VertexArray();*/
+
 	}
 
 	Application::~Application() {

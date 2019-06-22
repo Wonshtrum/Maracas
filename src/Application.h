@@ -8,6 +8,8 @@
 #include "Core.h"
 #include "Event.h"
 #include "Window.h"
+#include "GraphicsContext.h"
+#include "Shader.h"
 
 /* =========================================== *
  * application specific macros

@@ -79,21 +79,17 @@ namespace Maracas {
 		});
 	}
 
-	void GLFW_Window::shutdown() {
+	GLFW_Window::~GLFW_Window() {
 		glfwDestroyWindow(m_window);
+		delete m_context;
 		MRC_CORE_WARN("window destroyed");
 	}
 
-	void GLFW_Window::onUpdate() {
-		glClearColor(0.05,0.2,0.3,1);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glfwPollEvents();
-		m_context->swapBuffers();
-	}
+	void GLFW_Window::pollEvents() { glfwPollEvents(); }
 	
 	void DEBUG_Window::init() { MRC_CORE_WARN("dummy window created: \"", m_data.title, "\" (", m_data.width, "x", m_data.height, ")"); }
-	void DEBUG_Window::shutdown() { MRC_CORE_WARN("dummy window destroyed"); }
-	void DEBUG_Window::onUpdate() { WindowClosedEvent event; m_data.callback(event); }
+	DEBUG_Window::~DEBUG_Window() { MRC_CORE_WARN("dummy window destroyed"); }
+	void DEBUG_Window::pollEvents() { WindowClosedEvent event; m_data.callback(event); }
 	
 #if defined(USE_GLFW_WINDOW)
 	Window* Window::createWindow(const char* title, unsigned int width, unsigned int height) { return new GLFW_Window(title, width, height); }
