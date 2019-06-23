@@ -38,8 +38,8 @@ namespace Maracas {
 		unsigned int m_size;
 		unsigned int m_offset;
 		bool m_normalized;
-		unsigned int getCount() { return s_counts[m_type]; }
-		GLenum getOpenGLType() { return s_OpenGLTypes[m_type]; }
+		inline unsigned int getCount() { return s_counts[m_type]; }
+		inline GLenum getOpenGLType() { return s_OpenGLTypes[m_type]; }
 		static unsigned int s_sizes[NB_SHADERDATA_TYPES];
 		static unsigned int s_counts[NB_SHADERDATA_TYPES];
 		static GLenum s_OpenGLTypes[NB_SHADERDATA_TYPES];
@@ -51,20 +51,13 @@ namespace Maracas {
 	 * =========================================== */
 	class BufferLayout {
 		public:
-			BufferLayout(BufferElement* elements, unsigned int elementCount): m_elements(elements), m_elementCount(elementCount), m_stride(0) { calculateOffsetAndStride(); }
+			BufferLayout(BufferElement* elements, unsigned int elementCount);
 			~BufferLayout() {}
-			BufferElement* getElements() { return m_elements; }
-			unsigned int getElementCount() { return m_elementCount; }
-			unsigned int getStride() { return m_stride; }
+			inline BufferElement* getElements() { return m_elements; }
+			inline unsigned int getElementCount() { return m_elementCount; }
+			inline unsigned int getStride() { return m_stride; }
 		private:
-			void calculateOffsetAndStride() {
-				m_stride = 0;
-				for (unsigned int i = 0 ; i < m_elementCount ; i++) {
-					m_elements[i].m_offset = m_stride;
-					m_stride += m_elements[i].m_size;
-					MRC_CORE_DEBUG(m_elements[i].m_name," ",m_stride);
-				}
-			}
+			void calculateOffsetAndStride();
 			BufferElement* m_elements;
 			unsigned int m_elementCount;
 			unsigned int m_stride;
@@ -78,8 +71,8 @@ namespace Maracas {
 			virtual ~VertexBuffer() {}
 			virtual void bind() = 0;
 			virtual void unbind() = 0;
-			BufferLayout* getLayout() { return m_layout; }
-			virtual void setLayout(BufferLayout* layout) { m_layout = layout; };
+			inline BufferLayout* getLayout() { return m_layout; }
+			inline virtual void setLayout(BufferLayout* layout) { m_layout = layout; }
 		protected:
 			BufferLayout* m_layout;
 	};
@@ -92,7 +85,7 @@ namespace Maracas {
 			virtual ~IndexBuffer() {}
 			virtual void bind() = 0;
 			virtual void unbind() = 0;
-			unsigned int getCount() { return m_count; }
+			inline unsigned int getCount() { return m_count; }
 		protected:
 			unsigned int m_count;
 	};
@@ -108,7 +101,6 @@ namespace Maracas {
 			virtual void addVertexBuffer(VertexBuffer* vertexBuffer) = 0;
 			virtual void setIndexBuffer(IndexBuffer* indexBuffer) = 0;
 			virtual IndexBuffer* getIndexBuffer() = 0;
-
 	};
 
 	/* =========================================== *
@@ -116,13 +108,9 @@ namespace Maracas {
 	 * =========================================== */
 	class OpenGL_VertexBuffer: public VertexBuffer {
 		public:
-			OpenGL_VertexBuffer(float data[], unsigned int size) {
-				glGenBuffers(1, &m_rendererID);
-				glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
-				glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-			}
-			virtual void bind() override { glBindBuffer(GL_ARRAY_BUFFER, m_rendererID); }
-			virtual void unbind() override { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+			OpenGL_VertexBuffer(float data[], unsigned int size);
+			inline virtual void bind() override { glBindBuffer(GL_ARRAY_BUFFER, m_rendererID); }
+			inline virtual void unbind() override { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 		private:
 			unsigned int m_rendererID;
 	};
@@ -132,14 +120,9 @@ namespace Maracas {
 	 * =========================================== */
 	class OpenGL_IndexBuffer: public IndexBuffer {
 		public:
-			OpenGL_IndexBuffer(unsigned int indices[], unsigned int size) {
-				m_count = size/sizeof(unsigned int);
-				glGenBuffers(1, &m_rendererID);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
-			}
-			virtual void bind() override { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID); }
-			virtual void unbind() override { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+			OpenGL_IndexBuffer(unsigned int indices[], unsigned int size);
+			inline virtual void bind() override { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID); }
+			inline virtual void unbind() override { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
 		private:
 			unsigned int m_rendererID;
 	};
@@ -149,29 +132,12 @@ namespace Maracas {
 	 * =========================================== */
 	class OpenGL_VertexArray: public VertexArray {
 		public:
-			OpenGL_VertexArray() {
-				glGenVertexArrays(1, &m_rendererID);
-				glBindVertexArray(m_rendererID);
-			}
-			virtual void bind() override { glBindVertexArray(m_rendererID); }
-			virtual void unbind() override { glBindVertexArray(0); }
-			virtual void addVertexBuffer(VertexBuffer* vertexBuffer) override {
-				unsigned int stride = vertexBuffer->getLayout()->getStride();
-				MRC_CORE_ASSERT(stride, "Vertex Buffer has no layout!");
-				unsigned int elementCount = vertexBuffer->getLayout()->getElementCount();
-				BufferElement* elements = vertexBuffer->getLayout()->getElements();
-				for (unsigned int i = 0 ; i < elementCount ; i++) {
-					glEnableVertexAttribArray(i);
-					glVertexAttribPointer(i, elements[i].getCount(), elements[i].getOpenGLType(), elements[i].m_normalized, stride, (const void*)(elements[i].m_offset));
-					MRC_DEBUG("Layout(",i,") ", elements[i].getCount(),", ", elements[i].getOpenGLType(),", ", elements[i].m_normalized,", ", elements[i].m_size,", ", elements[i].m_offset);
-				}
-			}
-			virtual void setIndexBuffer(IndexBuffer* indexBuffer) override {
-				glBindVertexArray(m_rendererID);
-				indexBuffer->bind();
-				m_indexBuffer = indexBuffer;
-			}
-			virtual IndexBuffer* getIndexBuffer() override { return m_indexBuffer; }
+			OpenGL_VertexArray();
+			inline virtual void bind() override { glBindVertexArray(m_rendererID); }
+			inline virtual void unbind() override { glBindVertexArray(0); }
+			virtual void addVertexBuffer(VertexBuffer* vertexBuffer) override;
+			virtual void setIndexBuffer(IndexBuffer* indexBuffer) override;
+			inline virtual IndexBuffer* getIndexBuffer() override;
 		private:
 			unsigned int m_rendererID;
 			//VertexBuffer vector ?

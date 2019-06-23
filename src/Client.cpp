@@ -15,11 +15,12 @@ class MyApp : public Maracas::Application {
 				-d, -d, 1.0f, 0.0f, 0.0f,
 				 d, -d, 0.0f, 1.0f, 0.0f,
 				 d,  d, 0.0f, 0.0f, 1.0f,
-				-d,  d, 1.0f, 1.0f, 0.0f
+				-d,  d, 1.0f, 1.0f, 0.0f,
+				 0,  0, 0.0f, 0.0f, 0.0f
 			};
 			unsigned int indices[] {
 				0, 1, 2,
-				2, 3, 0
+				2, 3, 0,
 			};
 
 			Maracas::BufferElement elements[] = {{Maracas::ShaderData::Float2, "a_position"}, {Maracas::ShaderData::Float3, "a_color"}};
@@ -36,8 +37,10 @@ class MyApp : public Maracas::Application {
 			m_vao->unbind();
 			m_ibo->unbind();
 			m_vbo->unbind();
-glEnable(GL_BLEND);
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 			m_shader = new Maracas::Shader(R"(
 				#version 330 core
 				layout(location = 0) in vec4 a_position;
@@ -52,7 +55,7 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				uniform float u_y;
 				layout(location = 0) out vec4 color;
 				void main() {
-					float d = 4*distance(vec4(u_x,u_y,0.0,1.0),v_position)+1;
+					float d = 1*distance(vec4(u_x,u_y,0.0,1.0),v_position)+1;
 					color = vec4(1,0.0,0.0,1/(d*d*d*d));
 				})");
 		}
@@ -79,13 +82,6 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			m_context->clearColor(0.0,0.07,0.1,1);
 			m_context->drawTriangles(m_vao);
 			m_context->swapBuffers();
-			if (INPUTS::getKey(MRC_KEY_RIGHT) && INPUTS::getKey(MRC_KEY_LEFT)) {
-				MRC_DEBUG("<---->");
-			} else if (INPUTS::getKey(MRC_KEY_RIGHT)) {
-				MRC_DEBUG("   -->");
-			} else if (INPUTS::getKey(MRC_KEY_LEFT)) {
-				MRC_DEBUG("<--   ");
-			}
 		}
 	private:
 		Maracas::Window* m_window;
