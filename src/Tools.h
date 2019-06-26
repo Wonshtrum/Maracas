@@ -82,28 +82,31 @@ namespace Maracas {
 				head = head->next;
 				m_count++;
 			}
-			T& next() {
+			T* next() {
 				current = current->next;
-				return *(current->element);
+				return current->element;
 			}
-			T& previous() {
+			T* previous() {
 				current = current->previous;
-				return *(current->element);
+				return current->element;
 			}
-			void popBegin() {
+			T* popBegin() {
+				T* popped = tail->element;
 				tail = tail->next;
-				delete tail->previous;
 				tail->previous = nullptr;
 				m_count--;
+				return popped;
 			}
-			void popEnd() {
+			T* popEnd() {
+				T* popped = head->element;
 				head = head->previous;
-				delete head->next;
 				head->next = nullptr;
 				m_count--;
+				return popped;
 			}
-			void pop() {
+			T* pop() {
 				listElement<T>* tmp;
+				T* popped = head->element;
 				if (current->previous) {
 					current->previous->next = current->next;
 					tmp = current->previous;
@@ -116,15 +119,15 @@ namespace Maracas {
 				} else {
 					head = current->previous;
 				}
-				delete current;
 				current = tmp;
+				return popped;
 			}
-			inline T& getCurrent() { return *(current->element); }
-			inline T& getTail() { return *(tail->element); }
-			inline T& getHead() { return *(head->element); }
+			inline T* getCurrent() { return current->element; }
+			inline T* getTail() { return tail->element; }
+			inline T* getHead() { return head->element; }
 			inline void begin() { current = tail; }
 			inline void end() { current = head; }
-		private:
+		protected:
 			int m_count;
 			listElement<T>* tail;
 			listElement<T>* head;

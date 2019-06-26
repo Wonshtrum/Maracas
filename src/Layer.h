@@ -6,29 +6,40 @@
  * load headers
  * =========================================== */
 #include "Core.h"
+#include "Event.h"
 
 /* =========================================== *
  * Layer specific macros
  * =========================================== */
 //ENDHEAD
 namespace Maracas {
+	class LayerStack;
 	class Layer {
-		Layer() {}
-		virtual ~Layer() {}
-		virtual void onAttach() = 0;
-		virtual void onDettach() = 0;
-		virtual void onUpdate() = 0;
+		public:
+			friend LayerStack;
+			Layer() {}
+			virtual ~Layer() {}
+		protected:
+			virtual void onAttach() = 0;
+			virtual void onDettach() = 0;
+			virtual void onUpdate() = 0;
+			virtual void onEvent(Event& event) = 0;
 	};
 
-	class LayerStack {
+	class LayerStack: public LinkedList<Layer> {
 		public:
-			LayerStack() {}
+			LayerStack(Layer* layer): LinkedList(layer) {}
 			~LayerStack() {}
-			void pushLayer(Layer* layer) {}
-			void popLayer(Layer* layer) {}
-			int getCount() { return m_count; }
-		private:
-			LinkedList<Layer>* layers;
-			int m_count = 0;
+			void insertAfter(Layer* layer);
+			void insertBefore(Layer* layer);
+			void insertBegin(Layer* layer);
+			void insertEnd(Layer* layer);
+			Layer* popBegin();
+			Layer* popEnd();
+			Layer* pop();
+			void onUpdate();
+			void onEvent(Event& event);
 	};
 }
+
+#endif

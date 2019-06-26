@@ -39,7 +39,8 @@ class MyApp : public Maracas::Application {
 			m_vbo->unbind();
 
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+			MRC_CORE_ERROR(GL_SRC_ALPHA);
 
 			m_shader = new Maracas::Shader(R"(
 				#version 330 core
@@ -55,7 +56,7 @@ class MyApp : public Maracas::Application {
 				uniform float u_y;
 				layout(location = 0) out vec4 color;
 				void main() {
-					float d = 1*distance(vec4(u_x,u_y,0.0,1.0),v_position)+1;
+					float d = 4*distance(vec4(u_x,u_y,0.0,1.0),v_position)+1;
 					color = vec4(1,0.0,0.0,1/(d*d*d*d));
 				})");
 		}
@@ -79,7 +80,7 @@ class MyApp : public Maracas::Application {
 			glUniform1f(locX, (INPUTS::getCursorX()-W)/W);
 			glUniform1f(locY, (H-INPUTS::getCursorY())/H);
 			m_vao->bind();
-			m_context->clearColor(0.0,0.07,0.1,1);
+			//m_context->clearColor(0.0,0.07,0.1,1);
 			m_context->drawTriangles(m_vao);
 			m_context->swapBuffers();
 		}
