@@ -17,26 +17,27 @@ namespace Maracas {
 	class Layer {
 		public:
 			friend LayerStack;
-			Layer() {}
+			Layer(const char* debugName): m_debugName(debugName) {}
 			virtual ~Layer() {}
 		protected:
 			virtual void onAttach() = 0;
 			virtual void onDettach() = 0;
 			virtual void onUpdate() = 0;
 			virtual void onEvent(Event& event) = 0;
+			const char* m_debugName;
 	};
 
 	class LayerStack: public LinkedList<Layer> {
 		public:
-			LayerStack(Layer* layer): LinkedList(layer) {}
+			LayerStack(Layer* layer): LinkedList(layer) { layer->onAttach(); }
 			~LayerStack() {}
-			void insertAfter(Layer* layer);
-			void insertBefore(Layer* layer);
-			void insertBegin(Layer* layer);
-			void insertEnd(Layer* layer);
-			Layer* popBegin();
-			Layer* popEnd();
-			Layer* pop();
+			virtual void insertAfter(Layer* layer) override;
+			virtual void insertBefore(Layer* layer) override;
+			virtual void insertBegin(Layer* layer) override;
+			virtual void insertEnd(Layer* layer) override;
+			virtual Layer* popBegin() override;
+			virtual Layer* popEnd() override;
+			virtual Layer* pop() override;
 			void onUpdate();
 			void onEvent(Event& event);
 	};

@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "GraphicsData.h"
 
 namespace Maracas {
 	Application* Application::s_instance;
@@ -7,14 +6,10 @@ namespace Maracas {
 		MRC_CORE_ASSERT(!s_instance,"Application already exists!");
 		s_instance = this;
 		MRC_CORE_INFO("Application started");
-
-		/*BufferElement test[] = {{ShaderData::Float2,"a_position"}};
-		BufferLayout b(test, 1);
-		VertexArray vao = OpenGL_VertexArray();*/
-
 	}
 
 	Application::~Application() {
+		delete m_layerStack;
 		MRC_CORE_INFO("Application destroyed");
 	}
 
@@ -24,14 +19,19 @@ namespace Maracas {
 	}
 
 	void Application::onEvent(Event& event) {
-		MRC_TRACE(event.toString());
 		dispatch<WindowClosedEvent>(event,BIND(Application::onWindowClosed));
+		m_layerStack->onEvent(event);
 	}
 
 	void Application::run() {
 		while (m_running) {
 			onUpdate();
 		}
+	}
+
+	void Application::initLayerStack(Layer* layer) {
+		MRC_CORE_INFO("First layer added");
+		m_layerStack = new LayerStack(layer);
 	}
 
 	Application* Application::get() {
