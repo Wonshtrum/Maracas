@@ -36,51 +36,66 @@ namespace Maracas {
 		listElement<T>* next;
 		listElement(T* _element): previous(nullptr), element(_element), next(nullptr) {}
 		listElement(listElement<T>* _previous, T* _element, listElement<T>* next): previous(_previous), element(_element), next(next) {}
-		~listElement() { delete element; }
 	};
+
 	template<typename T>
 	class LinkedList {
 		public:
-			LinkedList(T* element):m_count(0) {
-				head = tail = current = new listElement<T>(element);
+			LinkedList():m_count(0) {
+				head = tail = current = nullptr;
 			}
 			virtual ~LinkedList() {
 				listElement<T>* tmp = tail;
-				do {
+				while (tail) {
 					tmp = tail->next;
+					delete tail->element;
 					delete tail;
 					tail = tmp;
-				} while (tail);
+				}
 			}
 			void display() {
 				listElement<T>* tmp = tail;
-				do {
+				while (tmp) {
 					std::cout << *(tmp->element) << " ; ";
 					tmp = tmp->next;
-				} while (tmp);
+				}
 				std::cout << std::endl;
 			}
 			virtual void insertAfter(T* element) {
-				current->next = new listElement<T>(current,element,current->next);
-				if (current == head) {
-					head = current->next;
+				if (m_count++) {
+					current->next = new listElement<T>(current,element,current->next);
+					if (current == head) {
+						head = current->next;
+					}
+				} else {
+					head = tail = current = new listElement<T>(element);
 				}
-				m_count++;
 			}
 			virtual void insertBefore(T* element) {
-				current->previous = new listElement<T>(current->previous, element, current);
-				if (current == tail) {
-					tail = current->previous;
+				if (m_count++) {
+					current->previous = new listElement<T>(current->previous, element, current);
+					if (current == tail) {
+						tail = current->previous;
+					}
+				} else {
+					head = tail = current = new listElement<T>(element);
 				}
 			}
 			virtual void insertBegin(T* element) {
-				tail = new listElement<T>(nullptr,element,tail);
-				m_count++;
+				if (m_count++) {
+					tail->previous = new listElement<T>(nullptr,element,tail);
+					tail = tail->previous;
+				} else {
+					head = tail = current = new listElement<T>(element);
+				}
 			}
 			virtual void insertEnd(T* element) {
-				head->next = new listElement<T>(head,element,nullptr);
-				head = head->next;
-				m_count++;
+				if (m_count++) {
+					head->next = new listElement<T>(head,element,nullptr);
+					head = head->next;
+				} else {
+					head = tail = current = new listElement<T>(element);
+				}
 			}
 			virtual T* next() {
 				current = current->next;
@@ -91,42 +106,61 @@ namespace Maracas {
 				return current->element;
 			}
 			virtual T* popBegin() {
-				T* popped = tail->element;
+				listElement<T>* tmp = tail;
+				T* popped = tmp->element;
 				tail = tail->next;
-				tail->previous = nullptr;
+				delete tmp;
+				if (tail) {
+					tail->previous = nullptr;
+				} else {
+					head = current = nullptr;
+				}
 				m_count--;
 				return popped;
 			}
 			virtual T* popEnd() {
-				T* popped = head->element;
+				listElement<T>* tmp = head;
+				T* popped = tmp->element;
 				head = head->previous;
-				head->next = nullptr;
+				delete tmp;
+				if (head) {
+					head->next = nullptr;
+				} else {
+					tail = current = nullptr;
+				}
 				m_count--;
 				return popped;
 			}
 			virtual T* pop() {
-				listElement<T>* tmp;
-				T* popped = head->element;
+				listElement<T>* newCurrent = nullptr;
+				T* popped = current->element;
 				if (current->previous) {
 					current->previous->next = current->next;
-					tmp = current->previous;
+					newCurrent = current->previous;
 				} else {
 					tail = current->next;
 				}
 				if (current->next) {
 					current->next->previous = current->previous;
-					tmp = current->next;
+					newCurrent = current->next;
 				} else {
 					head = current->previous;
 				}
-				current = tmp;
+				listElement<T>* tmp = current;
+				current = newCurrent;
+				delete tmp;
+				m_count--;
 				return popped;
+			}
+			virtual bool empty() {
+				return m_count==0;
 			}
 			virtual inline T* getCurrent() { return current->element; }
 			virtual inline T* getTail() { return tail->element; }
 			virtual inline T* getHead() { return head->element; }
 			virtual inline void begin() { current = tail; }
 			virtual inline void end() { current = head; }
+			virtual inline int getCount() { return m_count; }
 		protected:
 			int m_count;
 			listElement<T>* tail;

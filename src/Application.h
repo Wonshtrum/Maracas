@@ -30,11 +30,10 @@ namespace Maracas {
 			bool onWindowClosed(WindowClosedEvent& event);
 			virtual void run();
 			virtual void onUpdate() = 0;
-			void initLayerStack(Layer* layer);
 			inline static Application* get();
 		protected:
 			bool m_running = true;
-			LayerStack* m_layerStack;
+			LayerStack m_layerStack;
 			static Application* s_instance;
 	};
 

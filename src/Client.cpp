@@ -59,7 +59,7 @@ class MyLayer: public Maracas::Layer {
 			delete m_vao;
 			delete m_vbo;
 			delete m_ibo;
-			onDettach();
+			MRC_ERROR(m_debugName, " cleared");
 		}
 
 		virtual void onUpdate() override {
@@ -78,6 +78,7 @@ class MyLayer: public Maracas::Layer {
 
 		virtual void onEvent(Maracas::Event& event) override {
 			MRC_TRACE(m_debugName, ": ", event.toString());
+			event.m_handled = true;
 		}
 
 		virtual void onAttach() override {
@@ -121,8 +122,9 @@ class MyApp: public Maracas::Application {
 			m_context = m_window->getContext();
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-			initLayerStack(new MyLayer("RedLayer", m_context));
-			m_layerStack->insertAfter(new MyLayer2("BlueLayer", m_context));
+			m_layerStack.insertBegin(new MyLayer("RedLayer", m_context));
+			m_layerStack.insertAfter(new MyLayer2("BlueLayer", m_context));
+			m_layerStack.insertBegin(new MyLayer("RedLayer2", m_context));
 		}
 
 		~MyApp() {
@@ -131,8 +133,12 @@ class MyApp: public Maracas::Application {
 		}
 		virtual void onUpdate() override {
 			m_window->pollEvents();
+			if (INPUTS::getMouseButton(MRC_MOUSE_BUTTON_1) and !m_layerStack.empty()) {
+				delete m_layerStack.pop();
+				MRC_DEBUG(m_layerStack.getCount());
+			}
 			m_context->clearColor(0.0,0.07,0.1,1);
-			m_layerStack->onUpdate();
+			m_layerStack.onUpdate();
 			m_context->swapBuffers();
 		}
 	private:

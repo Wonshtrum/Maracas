@@ -9,7 +9,6 @@ namespace Maracas {
 	}
 
 	Application::~Application() {
-		delete m_layerStack;
 		MRC_CORE_INFO("Application destroyed");
 	}
 
@@ -20,18 +19,13 @@ namespace Maracas {
 
 	void Application::onEvent(Event& event) {
 		dispatch<WindowClosedEvent>(event,BIND(Application::onWindowClosed));
-		m_layerStack->onEvent(event);
+		m_layerStack.onEvent(event);
 	}
 
 	void Application::run() {
 		while (m_running) {
 			onUpdate();
 		}
-	}
-
-	void Application::initLayerStack(Layer* layer) {
-		MRC_CORE_INFO("First layer added");
-		m_layerStack = new LayerStack(layer);
 	}
 
 	Application* Application::get() {

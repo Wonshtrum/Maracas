@@ -29,7 +29,7 @@ namespace Maracas {
 
 	class LayerStack: public LinkedList<Layer> {
 		public:
-			LayerStack(Layer* layer): LinkedList(layer) { layer->onAttach(); }
+			LayerStack() {}
 			~LayerStack() {}
 			virtual void insertAfter(Layer* layer) override;
 			virtual void insertBefore(Layer* layer) override;

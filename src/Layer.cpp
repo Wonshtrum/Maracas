@@ -18,11 +18,11 @@ namespace Maracas {
 		LinkedList::insertEnd(layer);
 	}
 	Layer* LayerStack::popBegin() {
-		current->element->onDettach();
+		tail->element->onDettach();
 		return LinkedList::popBegin();
 	}
 	Layer* LayerStack::popEnd() {
-		current->element->onDettach();
+		head->element->onDettach();
 		return LinkedList::popEnd();
 	}
 	Layer* LayerStack::pop() {
@@ -37,13 +37,13 @@ namespace Maracas {
 		}
 	}
 	void LayerStack::onEvent(Event& event) {
-		listElement<Layer>* layer = tail;
+		listElement<Layer>* layer = head;
 		while (layer) {
 			layer->element->onEvent(event);
 			if (event.m_handled) {
 				break;
 			}
-			layer = layer->next;
+			layer = layer->previous;
 		}
 	}
 }
