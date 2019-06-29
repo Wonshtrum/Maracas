@@ -90,6 +90,26 @@ namespace Maracas {
 	};
 
 	/* =========================================== *
+	 * window resized
+	 * =========================================== */
+	class WindowResizedEvent: public Event {
+		public:
+			WindowResizedEvent(unsigned int width, unsigned int height): m_width(width), m_height(height) {}
+			inline unsigned int getWidth() { return m_width; }
+			inline unsigned int getHeight() { return m_height; }
+			virtual std::string toString() override {
+				std::stringstream ss;
+				ss << getName() << ": ( " << m_width << " ; " << m_height << " )";
+				return ss.str();
+			}
+			EVENT_CLASS_CATEGORY(EventCategoryApplication)
+			EVENT_CLASS_TYPE(WindowResized)
+		private:
+			unsigned int m_width;
+			unsigned int m_height;
+	};
+
+	/* =========================================== *
 	 * key related event
 	 * =========================================== */
 	class KeyEvent: public Event {
@@ -180,7 +200,7 @@ namespace Maracas {
 				ss << getName() << ": ( " << m_x << " ; " << m_y << " )";
 				return ss.str();
 			}
-		EVENT_CLASS_CATEGORY(EventCategoryMouse)
+			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 			EVENT_CLASS_TYPE(MouseMoved)
 		private:
 			int m_x;
@@ -200,7 +220,7 @@ namespace Maracas {
 				ss << getName() << ": ( " << m_dx << " ; " << m_dy << " )";
 				return ss.str();
 			}
-			EVENT_CLASS_CATEGORY(EventCategoryMouse)
+			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 			EVENT_CLASS_TYPE(MouseScrolled)
 		private:
 			float m_dx;

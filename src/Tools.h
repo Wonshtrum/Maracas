@@ -167,6 +167,41 @@ namespace Maracas {
 			listElement<T>* head;
 			listElement<T>* current;
 	};
+
+	template<typename T>
+	class SmartPointer {
+		public:
+			SmartPointer(): m_element(nullptr), m_count(nullptr) {}
+			SmartPointer(T* element): m_element(element), m_count(new int(0)) {}
+			SmartPointer(const SmartPointer<T>& other): m_element(other.m_element), m_count(other.m_count) {}
+			~SmartPointer() {
+				if (m_count && !((*m_count)--)) {
+					if (m_element) {
+						delete m_element;
+					}
+					delete m_count;
+				}
+			}
+			inline T* operator->() { return m_element; }
+			inline T& operator*() { return *m_element; }
+			SmartPointer<T>& operator=(const SmartPointer<T>& other) {
+				T* oldElement = m_element;
+				int* oldCount = m_count;
+				m_element = other.m_element;
+				m_count = other.m_count;
+				(*m_count)++;
+				if (oldCount && !((*oldCount)--)) {
+					if (oldElement) {
+						delete oldElement;
+					}
+					delete oldCount;
+				}
+				return *this;
+			}
+		protected:
+			T* m_element;
+			int* m_count;
+	};
 }
 
 #endif

@@ -1,4 +1,4 @@
-GCC = g++ -std=c++11 -Wall
+GCC = g++ -std=c++11 -Wall -g
 GOO = $(GCC) -c
 RM = rm -if
 srcdir = src/

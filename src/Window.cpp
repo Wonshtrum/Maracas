@@ -30,6 +30,13 @@ namespace Maracas {
 			WindowClosedEvent event;
 			data.callback(event);
 		});
+		glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
+			GRAB_DATA;
+			data.width = width;
+			data.height = height;
+			WindowResizedEvent event(width, height);
+			data.callback(event);
+		});
 		glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scanCode, int action, int mods) {
 			GRAB_DATA;
 			int mrc_key = InputsStates::getGLFWequivKey(key);
@@ -82,7 +89,7 @@ namespace Maracas {
 	GLFW_Window::~GLFW_Window() {
 		glfwDestroyWindow(m_window);
 		delete m_context;
-		MRC_CORE_WARN("window destroyed");
+		MRC_CORE_WARN("window \"", m_data.title, "\" destroyed");
 	}
 
 	void GLFW_Window::pollEvents() { glfwPollEvents(); }
