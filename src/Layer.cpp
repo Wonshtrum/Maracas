@@ -29,10 +29,10 @@ namespace Maracas {
 		current->element->onDettach();
 		return LinkedList::pop();
 	}
-	void LayerStack::onUpdate() {
+	void LayerStack::onUpdate(float deltaTime) {
 		listElement<Layer>* layer = tail;
 		while (layer)  {
-			layer->element->onUpdate();
+			layer->element->onUpdate(deltaTime);
 			layer = layer->next;
 		}
 	}

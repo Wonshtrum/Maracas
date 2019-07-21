@@ -23,8 +23,14 @@ namespace Maracas {
 	}
 
 	void Application::run() {
+		auto lastFrameTime = std::chrono::steady_clock::now();
+		auto timeNow = lastFrameTime;
+		float deltaTime;
 		while (m_running) {
-			onUpdate();
+			lastFrameTime = timeNow;
+			timeNow = std::chrono::steady_clock::now();
+			deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(timeNow - lastFrameTime).count()/1000000.0;
+			onUpdate(deltaTime);
 		}
 	}
 

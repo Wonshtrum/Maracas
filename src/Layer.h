@@ -20,10 +20,10 @@ namespace Maracas {
 			Layer(const char* debugName): m_debugName(debugName) {}
 			virtual ~Layer() {}
 		protected:
-			virtual void onAttach() = 0;
-			virtual void onDettach() = 0;
-			virtual void onUpdate() = 0;
-			virtual void onEvent(Event& event) = 0;
+			virtual void onAttach() {};
+			virtual void onDettach() {};
+			virtual void onUpdate(float deltaTime) {};
+			virtual void onEvent(Event& event) {};
 			const char* m_debugName;
 	};
 
@@ -38,7 +38,7 @@ namespace Maracas {
 			virtual Layer* popBegin() override;
 			virtual Layer* popEnd() override;
 			virtual Layer* pop() override;
-			void onUpdate();
+			void onUpdate(float deltaTime);
 			void onEvent(Event& event);
 	};
 }

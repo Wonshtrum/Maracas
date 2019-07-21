@@ -29,7 +29,7 @@ namespace Maracas {
 			virtual void onEvent(Event& event);
 			bool onWindowClosed(WindowClosedEvent& event);
 			virtual void run();
-			virtual void onUpdate() = 0;
+			virtual void onUpdate(float deltaTime) = 0;
 			inline static Application* get();
 		protected:
 			bool m_running = true;

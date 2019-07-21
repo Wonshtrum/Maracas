@@ -15,7 +15,13 @@ namespace Maracas {
 		glfwSwapInterval(1);
 	}
 	
-	void OpenGLContext::drawTriangles(VertexArray* vertexArray) { glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr); }
+	void OpenGLContext::drawTriangles(VertexArray* vertexArray, Shader* shader, const glm::mat4& transform) {
+		shader->bind();
+		int locT = glGetUniformLocation(shader->getProgram(), "u_transform");
+		glUniformMatrix4fv(locT, 1, GL_FALSE, glm::value_ptr(transform));
+		vertexArray->bind();
+		glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+	}
 
 	VertexArray* OpenGLContext::createVertexArray() { return new OpenGL_VertexArray(); }
 	VertexBuffer* OpenGLContext::createVertexBuffer(float data[], unsigned int size) { return new OpenGL_VertexBuffer(data, size); }

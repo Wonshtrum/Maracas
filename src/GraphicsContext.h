@@ -7,6 +7,7 @@
  * =========================================== */
 #include "Core.h"
 #include "GraphicsData.h"
+#include "Shader.h"
 //ENDHEAD
 namespace Maracas {
 	/* =========================================== *
@@ -18,7 +19,7 @@ namespace Maracas {
 			virtual void init() = 0;
 			virtual void swapBuffers() = 0;
 			virtual void clearColor(float r, float g, float b, float a) = 0;
-			virtual void drawTriangles(VertexArray* vertexArray) = 0;
+			virtual void drawTriangles(VertexArray* vertexArray, Shader* shader, const glm::mat4& transform = glm::mat4(1.0f)) = 0;
 			virtual VertexArray* createVertexArray() = 0;
 			virtual VertexBuffer* createVertexBuffer(float data[], unsigned int size) = 0;
 			virtual IndexBuffer* createIndexBuffer(unsigned int indices[], unsigned int size) = 0;
@@ -34,7 +35,7 @@ namespace Maracas {
 			virtual void init() override;
 			virtual void swapBuffers() override;
 			virtual void clearColor(float r, float g, float b, float a) override;
-			virtual void drawTriangles(VertexArray* vertexArray) override;
+			virtual void drawTriangles(VertexArray* vertexArray, Shader* shader, const glm::mat4& transform = glm::mat4(1.0f)) override;
 			virtual VertexArray* createVertexArray() override;
 			virtual VertexBuffer* createVertexBuffer(float data[], unsigned int size) override;
 			virtual IndexBuffer* createIndexBuffer(unsigned int indices[], unsigned int size) override;

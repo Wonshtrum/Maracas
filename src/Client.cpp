@@ -62,7 +62,7 @@ class MyLayer: public Maracas::Layer {
 			MRC_ERROR(m_debugName, " cleared");
 		}
 
-		virtual void onUpdate() override {
+		virtual void onUpdate(float deltaTime) override {
 			m_shader->bind();
 			int locX = glGetUniformLocation(m_shader->getProgram(), "u_x");
 			int locY = glGetUniformLocation(m_shader->getProgram(), "u_y");
@@ -72,8 +72,7 @@ class MyLayer: public Maracas::Layer {
 			glUniform1f(locX, (INPUTS::getCursorX()-W)/W);
 			glUniform1f(locY, (H-INPUTS::getCursorY())/H);
 			glUniform3f(locC, 1.0f, 0.0f, 0.0f);
-			m_vao->bind();
-			m_context->drawTriangles(m_vao);
+			m_context->drawTriangles(m_vao, m_shader);
 		}
 
 		virtual void onEvent(Maracas::Event& event) override {
@@ -98,7 +97,7 @@ class MyLayer: public Maracas::Layer {
 class MyLayer2: public MyLayer {
 	public:
 		MyLayer2(const char* debugName, Maracas::GraphicsContext* context): MyLayer(debugName, context) {}
-		virtual void onUpdate() override {
+		virtual void onUpdate(float deltaTime) override {
 			m_shader->bind();
 			int locX = glGetUniformLocation(m_shader->getProgram(), "u_x");
 			int locY = glGetUniformLocation(m_shader->getProgram(), "u_y");
@@ -108,8 +107,7 @@ class MyLayer2: public MyLayer {
 			glUniform1f(locX, (W-INPUTS::getCursorX())/W);
 			glUniform1f(locY, (INPUTS::getCursorY()-H)/H);
 			glUniform3f(locC, 0.0f, 0.0f, 1.0f);
-			m_vao->bind();
-			m_context->drawTriangles(m_vao);
+			m_context->drawTriangles(m_vao, m_shader);
 		}
 };
 
@@ -131,14 +129,14 @@ class MyApp: public Maracas::Application {
 			delete m_window;
 			MRC_INFO("Application stoped");
 		}
-		virtual void onUpdate() override {
+		virtual void onUpdate(float deltaTime) override {
 			m_window->pollEvents();
 			if (INPUTS::getMouseButton(MRC_MOUSE_BUTTON_1) and !m_layerStack.empty()) {
 				delete m_layerStack.pop();
 				MRC_DEBUG(m_layerStack.getCount());
 			}
 			m_context->clearColor(0.0,0.07,0.1,1);
-			m_layerStack.onUpdate();
+			m_layerStack.onUpdate(deltaTime);
 			m_context->swapBuffers();
 		}
 	private:
@@ -146,7 +144,6 @@ class MyApp: public Maracas::Application {
 		Maracas::GraphicsContext* m_context;
 };
 
-Maracas::Application* Maracas::createApplication() {
+/*Maracas::Application* Maracas::createApplication() {
 	return new MyApp();
-}
-
+}*/
